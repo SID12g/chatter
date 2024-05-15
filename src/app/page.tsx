@@ -14,7 +14,6 @@ export default async function Home() {
     .collection("group")
     .find({ users: { $in: [session.user.user._id.toString()] } })
     .toArray();
-  console.log(chats);
   return (
     <main className={styles.main}>
       <div style={{ display: "flex" }}>
@@ -29,7 +28,7 @@ export default async function Home() {
         )}
       </div>
       <div>
-        <form method="POST" action="/api/chatting/add">
+        <form method="POST" action="/api/chatting/group/add">
           <input name="withchat" />
           <input
             defaultValue={session.user.user._id.toString()}
