@@ -12,8 +12,9 @@ export default async function Home() {
   let db = (await connectDB).db("chat");
   let chats = await db
     .collection("group")
-    .find({ users: { $in: [session.user.user._id.toString()] } })
+    .find({ users: { $in: [session?.user.user._id.toString()] } })
     .toArray();
+
   return (
     <main className={styles.main}>
       <div style={{ display: "flex" }}>
@@ -27,24 +28,28 @@ export default async function Home() {
           </div>
         )}
       </div>
-      <div>
-        <form method="POST" action="/api/chatting/group/add">
-          <input name="withchat" />
-          <input
-            defaultValue={session.user.user._id.toString()}
-            name="maker"
-            style={{ display: "none" }}
-          />
-          <button>와 채팅방 만들기</button>
-        </form>
+      {session ? (
         <div>
-          {chats.map((a, i) => (
-            <Link key={i} href={`/chat/${a._id.toString()}`}>
-              {a._id.toString()}
-            </Link>
-          ))}
+          <form method="POST" action="/api/chatting/group/add">
+            <input name="withchat" />
+            <input
+              defaultValue={session.user.user._id.toString()}
+              name="maker"
+              style={{ display: "none" }}
+            />
+            <button>와 채팅방 만들기</button>
+          </form>
+          <div>
+            {chats.map((a, i) => (
+              <Link key={i} href={`/chat/${a._id.toString()}`}>
+                {a._id.toString()}
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div>로그인 해야지</div>
+      )}
     </main>
   );
 }
