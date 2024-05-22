@@ -6,10 +6,19 @@ import { getServerSession } from "next-auth";
 export default async function Chat({ params }: { params: { id: string } }) {
   const session: any = await getServerSession(authOptions);
   let db = (await connectDB).db("chat");
-  let chats = await db
-    .collection("chatting")
-    .find({ group: params.id })
-    .toArray();
+  let chats;
+
+  chats = await db.collection("chatting").find({ group: params.id }).toArray();
+  let date = new Date();
+  const collection = db.collection("chatting");
+  const changeStream = collection.watch();
+  changeStream.on("change", async (result) => {
+    console.log("change, ", date);
+    chats = await db
+      .collection("chatting")
+      .find({ group: params.id })
+      .toArray();
+  });
 
   async function findUser(userid: string) {
     let db = (await connectDB).db("auth");
